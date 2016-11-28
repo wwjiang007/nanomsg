@@ -31,7 +31,6 @@
 #include "../../utils/alloc.h"
 #include "../../utils/chunkref.h"
 #include "../../utils/wire.h"
-#include "../../utils/list.h"
 
 #include <stddef.h>
 #include <string.h>
@@ -48,8 +47,8 @@ static const struct nn_sockbase_vfptr nn_rep_sockbase_vfptr = {
     nn_rep_events,
     nn_rep_send,
     nn_rep_recv,
-    nn_xrep_setopt,
-    nn_xrep_getopt
+    NULL,
+    NULL
 };
 
 void nn_rep_init (struct nn_rep *self,
@@ -152,14 +151,10 @@ static int nn_rep_create (void *hint, struct nn_sockbase **sockbase)
     return 0;
 }
 
-static struct nn_socktype nn_rep_socktype_struct = {
+struct nn_socktype nn_rep_socktype = {
     AF_SP,
     NN_REP,
     0,
     nn_rep_create,
     nn_xrep_ispeer,
-    NN_LIST_ITEM_INITIALIZER
 };
-
-struct nn_socktype *nn_rep_socktype = &nn_rep_socktype_struct;
-

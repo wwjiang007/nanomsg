@@ -49,7 +49,7 @@ struct nn_sock
     struct nn_sockbase *sockbase;
 
     /*  Pointer to the socket type metadata. */
-    struct nn_socktype *socktype;
+    const struct nn_socktype *socktype;
 
     int flags;
 
@@ -140,7 +140,8 @@ struct nn_sock
 };
 
 /*  Initialise the socket. */
-int nn_sock_init (struct nn_sock *self, struct nn_socktype *socktype, int fd);
+int nn_sock_init (struct nn_sock *self, const struct nn_socktype *socktype,
+    int fd);
 
 /*  Called by nn_close() to stop activity on the socket.  It doesn't block. */
 void nn_sock_stop (struct nn_sock *self);
@@ -160,7 +161,7 @@ struct nn_ctx *nn_sock_getctx (struct nn_sock *self);
 int nn_sock_ispeer (struct nn_sock *self, int socktype);
 
 /*  Add new endpoint to the socket. */
-int nn_sock_add_ep (struct nn_sock *self, struct nn_transport *transport,
+int nn_sock_add_ep (struct nn_sock *self, const struct nn_transport *transport,
     int bind, const char *addr);
 
 /*  Remove the endpoint with the specified ID from the socket. */

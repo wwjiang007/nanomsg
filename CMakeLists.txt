@@ -39,6 +39,12 @@ if (POLICY CMP0042)
     cmake_policy (SET CMP0042 NEW)
 endif ()
 
+set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}" isSystemDir)
+if ("${isSystemDir}" STREQUAL "-1")
+    set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+endif ("${isSystemDir}" STREQUAL "-1")
+
 set (NN_DESCRIPTION "High-Performance Scalability Protocols")
 set (ISSUE_REPORT_MSG "Please consider opening an issue at https://github.com/nanomsg/nanomsg")
 
@@ -262,22 +268,22 @@ if (NN_ENABLE_DOC)
     macro (add_libnanomsg_man NAME SECT)
         add_custom_command (
             OUTPUT ${NAME}.${SECT}
-            COMMAND ${NN_A2M} -o ${NAME}.${SECT} ${NN_DOCDIR}/${NAME}.txt
-            MAIN_DEPENDENCY ${NN_DOCDIR}/${NAME}.txt
+            COMMAND ${NN_A2M} -o ${NAME}.${SECT} ${NN_DOCDIR}/${NAME}.adoc
+            MAIN_DEPENDENCY ${NN_DOCDIR}/${NAME}.adoc
         )
 
         add_custom_command (
-            OUTPUT ${NAME}.${SECT}.html
-            COMMAND ${NN_A2H} -o ${NAME}.${SECT}.html ${NN_DOCDIR}/${NAME}.txt
+            OUTPUT ${NAME}.html
+            COMMAND ${NN_A2H} -o ${NAME}.html ${NN_DOCDIR}/${NAME}.adoc
             DEPENDS ${NN_STYLESHEET}
-            MAIN_DEPENDENCY ${NN_DOCDIR}/${NAME}.txt
+            MAIN_DEPENDENCY ${NN_DOCDIR}/${NAME}.adoc
         )
 
         set(NN_MANS ${NN_MANS} ${NAME}.${SECT})
-        set(NN_HTMLS ${NN_HTMLS} ${NAME}.${SECT}.html)
+        set(NN_HTMLS ${NN_HTMLS} ${NAME}.html)
 
         install (
-            FILES ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.${SECT}.html
+            FILES ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.html
             DESTINATION ${CMAKE_INSTALL_DOCDIR}
         )
         install (
@@ -313,6 +319,7 @@ if (NN_ENABLE_DOC)
     add_libnanomsg_man (nn_device 3)
     add_libnanomsg_man (nn_cmsg 3)
     add_libnanomsg_man (nn_poll 3)
+    add_libnanomsg_man (nn_term 3)
 
     add_libnanomsg_man (nanomsg 7)
     add_libnanomsg_man (nn_pair 7)

@@ -65,13 +65,7 @@ void nn_xrep_out (struct nn_sockbase *self, struct nn_pipe *pipe);
 int nn_xrep_events (struct nn_sockbase *self);
 int nn_xrep_send (struct nn_sockbase *self, struct nn_msg *msg);
 int nn_xrep_recv (struct nn_sockbase *self, struct nn_msg *msg);
-int nn_xrep_setopt (struct nn_sockbase *self, int level, int option,
-    const void *optval, size_t optvallen);
-int nn_xrep_getopt (struct nn_sockbase *self, int level, int option,
-    void *optval, size_t *optvallen);
 
 int nn_xrep_ispeer (int socktype);
-
-extern struct nn_socktype *nn_xrep_socktype;
 
 #endif

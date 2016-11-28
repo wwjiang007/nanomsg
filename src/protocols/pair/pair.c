@@ -1,5 +1,6 @@
 /*
     Copyright (c) 2012-2013 Martin Sustrik  All rights reserved.
+    Copyright 2016 Garrett D'Amore <garrett@damore.org>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"),
@@ -20,21 +21,15 @@
     IN THE SOFTWARE.
 */
 
-#include "pair.h"
 #include "xpair.h"
 
 #include "../../nn.h"
 #include "../../pair.h"
-#include "../../utils/list.h"
 
-static struct nn_socktype nn_pair_socktype_struct = {
+struct nn_socktype nn_pair_socktype = {
     AF_SP,
     NN_PAIR,
     0,
     nn_xpair_create,
     nn_xpair_ispeer,
-    NN_LIST_ITEM_INITIALIZER
 };
-
-struct nn_socktype *nn_pair_socktype = &nn_pair_socktype_struct;
-

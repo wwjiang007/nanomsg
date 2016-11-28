@@ -1,5 +1,6 @@
 /*
     Copyright (c) 2013-2014 Martin Sustrik  All rights reserved.
+    Copyright 2016 Garrett D'Amore <garrett@damore.org>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"),
@@ -29,7 +30,6 @@
 #include "../../utils/cont.h"
 #include "../../utils/fast.h"
 #include "../../utils/alloc.h"
-#include "../../utils/list.h"
 #include "../../utils/attr.h"
 
 #include <stddef.h>
@@ -52,8 +52,8 @@ static const struct nn_sockbase_vfptr nn_xbus_sockbase_vfptr = {
     nn_xbus_events,
     nn_xbus_send,
     nn_xbus_recv,
-    nn_xbus_setopt,
-    nn_xbus_getopt
+    NULL,
+    NULL
 };
 
 void nn_xbus_init (struct nn_xbus *self,
@@ -196,20 +196,6 @@ int nn_xbus_recv (struct nn_sockbase *self, struct nn_msg *msg)
     return 0;
 }
 
-int nn_xbus_setopt (NN_UNUSED struct nn_sockbase *self, NN_UNUSED int level,
-    NN_UNUSED int option,
-    NN_UNUSED const void *optval, NN_UNUSED size_t optvallen)
-{
-    return -ENOPROTOOPT;
-}
-
-int nn_xbus_getopt (NN_UNUSED struct nn_sockbase *self, NN_UNUSED int level,
-    NN_UNUSED int option,
-    NN_UNUSED void *optval, NN_UNUSED size_t *optvallen)
-{
-    return -ENOPROTOOPT;
-}
-
 static int nn_xbus_create (void *hint, struct nn_sockbase **sockbase)
 {
     struct nn_xbus *self;
@@ -227,14 +213,10 @@ int nn_xbus_ispeer (int socktype)
     return socktype == NN_BUS ? 1 : 0;
 }
 
-static struct nn_socktype nn_xbus_socktype_struct = {
+struct nn_socktype nn_xbus_socktype = {
     AF_SP_RAW,
     NN_BUS,
     0,
     nn_xbus_create,
     nn_xbus_ispeer,
-    NN_LIST_ITEM_INITIALIZER
 };
-
-struct nn_socktype *nn_xbus_socktype = &nn_xbus_socktype_struct;
-

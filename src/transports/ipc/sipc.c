@@ -1,5 +1,6 @@
 /*
     Copyright (c) 2013 Martin Sustrik  All rights reserved.
+    Copyright 2016 Garrett D'Amore <garrett@damore.org>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"),
@@ -69,7 +70,7 @@ static void nn_sipc_shutdown (struct nn_fsm *self, int src, int type,
     void *srcptr);
 
 void nn_sipc_init (struct nn_sipc *self, int src,
-    struct nn_epbase *epbase, struct nn_fsm *owner)
+    struct nn_ep *ep, struct nn_fsm *owner)
 {
     nn_fsm_init (&self->fsm, nn_sipc_handler, nn_sipc_shutdown,
         src, self, owner);
@@ -78,7 +79,7 @@ void nn_sipc_init (struct nn_sipc *self, int src,
     self->usock = NULL;
     self->usock_owner.src = -1;
     self->usock_owner.fsm = NULL;
-    nn_pipebase_init (&self->pipebase, &nn_sipc_pipebase_vfptr, epbase);
+    nn_pipebase_init (&self->pipebase, &nn_sipc_pipebase_vfptr, ep);
     self->instate = -1;
     nn_msg_init (&self->inmsg, 0);
     self->outstate = -1;
@@ -208,6 +209,8 @@ static void nn_sipc_handler (struct nn_fsm *self, int src, int type,
     int rc;
     struct nn_sipc *sipc;
     uint64_t size;
+    int opt;
+    size_t opt_sz = sizeof (opt);
 
     sipc = nn_cont (self, struct nn_sipc, fsm);
 
@@ -327,10 +330,22 @@ static void nn_sipc_handler (struct nn_fsm *self, int src, int type,
                 switch (sipc->instate) {
                 case NN_SIPC_INSTATE_HDR:
 
-                    /*  Message header was received. Allocate memory for the
-                        message. */
+                    /*  Message header was received. Check that message size
+                        is acceptable by comparing with NN_RCVMAXSIZE;
+                        if it's too large, drop the connection. */
                     nn_assert (sipc->inhdr [0] == NN_SIPC_MSG_NORMAL);
                     size = nn_getll (sipc->inhdr + 1);
+
+                    nn_pipebase_getopt (&sipc->pipebase, NN_SOL_SOCKET,
+                        NN_RCVMAXSIZE, &opt, &opt_sz);
+
+                    if (opt >= 0 && size > (unsigned)opt) {
+                        sipc->state = NN_SIPC_STATE_DONE;
+                        nn_fsm_raise (&sipc->fsm, &sipc->done, NN_SIPC_ERROR);
+                        return;
+                    }
+
+                    /*  Allocate memory for the message. */
                     nn_msg_term (&sipc->inmsg);
                     nn_msg_init (&sipc->inmsg, (size_t) size);
 

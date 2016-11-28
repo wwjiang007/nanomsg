@@ -1,6 +1,6 @@
 /*
     Copyright (c) 2012-2013 Martin Sustrik  All rights reserved.
-    Copyright 2015 Garrett D'Amore <garrett@damore.org>
+    Copyright 2016 Garrett D'Amore <garrett@damore.org>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"),
@@ -21,7 +21,6 @@
     IN THE SOFTWARE.
 */
 
-#include "respondent.h"
 #include "xrespondent.h"
 
 #include "../../nn.h"
@@ -32,7 +31,6 @@
 #include "../../utils/fast.h"
 #include "../../utils/alloc.h"
 #include "../../utils/wire.h"
-#include "../../utils/list.h"
 
 #include <string.h>
 
@@ -64,8 +62,8 @@ static const struct nn_sockbase_vfptr nn_respondent_sockbase_vfptr = {
     nn_respondent_events,
     nn_respondent_send,
     nn_respondent_recv,
-    nn_xrespondent_setopt,
-    nn_xrespondent_getopt
+    NULL,
+    NULL
 };
 
 static void nn_respondent_init (struct nn_respondent *self,
@@ -173,14 +171,10 @@ static int nn_respondent_create (void *hint, struct nn_sockbase **sockbase)
     return 0;
 }
 
-static struct nn_socktype nn_respondent_socktype_struct = {
+struct nn_socktype nn_respondent_socktype = {
     AF_SP,
     NN_RESPONDENT,
     0,
     nn_respondent_create,
     nn_xrespondent_ispeer,
-    NN_LIST_ITEM_INITIALIZER
 };
-
-struct nn_socktype *nn_respondent_socktype = &nn_respondent_socktype_struct;
-

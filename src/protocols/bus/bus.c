@@ -1,5 +1,6 @@
 /*
     Copyright (c) 2013 Martin Sustrik  All rights reserved.
+    Copyright 2016 Garrett D'Amore <garrett@damore.org>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"),
@@ -20,7 +21,6 @@
     IN THE SOFTWARE.
 */
 
-#include "bus.h"
 #include "xbus.h"
 
 #include "../../nn.h"
@@ -29,7 +29,6 @@
 #include "../../utils/cont.h"
 #include "../../utils/alloc.h"
 #include "../../utils/err.h"
-#include "../../utils/list.h"
 
 struct nn_bus {
     struct nn_xbus xbus;
@@ -54,8 +53,8 @@ static const struct nn_sockbase_vfptr nn_bus_sockbase_vfptr = {
     nn_xbus_events,
     nn_bus_send,
     nn_bus_recv,
-    nn_xbus_setopt,
-    nn_xbus_getopt
+    NULL,
+    NULL
 };
 
 static void nn_bus_init (struct nn_bus *self,
@@ -130,14 +129,10 @@ static int nn_bus_create (void *hint, struct nn_sockbase **sockbase)
     return 0;
 }
 
-static struct nn_socktype nn_bus_socktype_struct = {
+struct nn_socktype nn_bus_socktype = {
     AF_SP,
     NN_BUS,
     0,
     nn_bus_create,
     nn_xbus_ispeer,
-    NN_LIST_ITEM_INITIALIZER
 };
-
-struct nn_socktype *nn_bus_socktype = &nn_bus_socktype_struct;
-

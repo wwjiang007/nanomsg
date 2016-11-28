@@ -32,7 +32,6 @@
 #include "../../utils/alloc.h"
 #include "../../utils/random.h"
 #include "../../utils/wire.h"
-#include "../../utils/list.h"
 #include "../../utils/attr.h"
 
 #include <string.h>
@@ -50,8 +49,8 @@ static const struct nn_sockbase_vfptr nn_xrep_sockbase_vfptr = {
     nn_xrep_events,
     nn_xrep_send,
     nn_xrep_recv,
-    nn_xrep_setopt,
-    nn_xrep_getopt
+    NULL,
+    NULL
 };
 
 void nn_xrep_init (struct nn_xrep *self, const struct nn_sockbase_vfptr *vfptr,
@@ -260,20 +259,6 @@ int nn_xrep_recv (struct nn_sockbase *self, struct nn_msg *msg)
     return 0;
 }
 
-int nn_xrep_setopt (NN_UNUSED struct nn_sockbase *self,
-    NN_UNUSED int level, NN_UNUSED int option,
-    NN_UNUSED const void *optval, NN_UNUSED size_t optvallen)
-{
-    return -ENOPROTOOPT;
-}
-
-int nn_xrep_getopt (NN_UNUSED struct nn_sockbase *self,
-    NN_UNUSED int level, NN_UNUSED int option,
-    NN_UNUSED void *optval, NN_UNUSED size_t *optvallen)
-{
-    return -ENOPROTOOPT;
-}
-
 static int nn_xrep_create (void *hint, struct nn_sockbase **sockbase)
 {
     struct nn_xrep *self;
@@ -291,14 +276,10 @@ int nn_xrep_ispeer (int socktype)
     return socktype == NN_REQ ? 1 : 0;
 }
 
-static struct nn_socktype nn_xrep_socktype_struct = {
+struct nn_socktype nn_xrep_socktype = {
     AF_SP_RAW,
     NN_REP,
     0,
     nn_xrep_create,
     nn_xrep_ispeer,
-    NN_LIST_ITEM_INITIALIZER
 };
-
-struct nn_socktype *nn_xrep_socktype = &nn_xrep_socktype_struct;
-

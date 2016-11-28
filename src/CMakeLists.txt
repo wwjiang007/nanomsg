@@ -38,7 +38,6 @@ set (NN_SOURCES
 
     core/ep.h
     core/ep.c
-    core/epbase.c
     core/global.h
     core/global.c
     core/pipe.c
@@ -128,28 +127,22 @@ set (NN_SOURCES
     protocols/utils/priolist.h
     protocols/utils/priolist.c
 
-    protocols/bus/bus.h
     protocols/bus/bus.c
     protocols/bus/xbus.h
     protocols/bus/xbus.c
 
-    protocols/pipeline/push.h
     protocols/pipeline/push.c
-    protocols/pipeline/pull.h
     protocols/pipeline/pull.c
     protocols/pipeline/xpull.h
     protocols/pipeline/xpull.c
     protocols/pipeline/xpush.h
     protocols/pipeline/xpush.c
 
-    protocols/pair/pair.h
     protocols/pair/pair.c
     protocols/pair/xpair.h
     protocols/pair/xpair.c
 
-    protocols/pubsub/pub.h
     protocols/pubsub/pub.c
-    protocols/pubsub/sub.h
     protocols/pubsub/sub.c
     protocols/pubsub/trie.h
     protocols/pubsub/trie.c
@@ -169,9 +162,7 @@ set (NN_SOURCES
     protocols/reqrep/xreq.h
     protocols/reqrep/xreq.c
 
-    protocols/survey/respondent.h
     protocols/survey/respondent.c
-    protocols/survey/surveyor.h
     protocols/survey/surveyor.c
     protocols/survey/xrespondent.h
     protocols/survey/xrespondent.c
@@ -201,7 +192,6 @@ set (NN_SOURCES
     transports/inproc/binproc.c
     transports/inproc/cinproc.h
     transports/inproc/cinproc.c
-    transports/inproc/inproc.h
     transports/inproc/inproc.c
     transports/inproc/ins.h
     transports/inproc/ins.c
@@ -216,7 +206,6 @@ set (NN_SOURCES
     transports/ipc/bipc.c
     transports/ipc/cipc.h
     transports/ipc/cipc.c
-    transports/ipc/ipc.h
     transports/ipc/ipc.c
     transports/ipc/sipc.h
     transports/ipc/sipc.c
@@ -229,7 +218,6 @@ set (NN_SOURCES
     transports/tcp/ctcp.c
     transports/tcp/stcp.h
     transports/tcp/stcp.c
-    transports/tcp/tcp.h
     transports/tcp/tcp.c
 
     transports/ws/aws.h
@@ -240,7 +228,6 @@ set (NN_SOURCES
     transports/ws/cws.c
     transports/ws/sws.h
     transports/ws/sws.c
-    transports/ws/ws.h
     transports/ws/ws.c
     transports/ws/ws_handshake.h
     transports/ws/ws_handshake.c
@@ -354,7 +341,6 @@ else ()
     add_library (${PROJECT_NAME} SHARED ${NN_SOURCES})
     add_definitions (-DNN_SHARED_LIB)
     set_target_properties (${PROJECT_NAME} PROPERTIES
-        VERSION "${NN_PACKAGE_VERSION}"
         SOVERSION "${NN_ABI_VERSION}")
 endif ()
 

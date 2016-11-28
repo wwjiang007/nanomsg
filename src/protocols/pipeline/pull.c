@@ -1,5 +1,6 @@
 /*
     Copyright (c) 2012-2013 Martin Sustrik  All rights reserved.
+    Copyright 2016 Garrett D'Amore <garrett@damore.org>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"),
@@ -20,21 +21,15 @@
     IN THE SOFTWARE.
 */
 
-#include "pull.h"
 #include "xpull.h"
 
 #include "../../nn.h"
 #include "../../pipeline.h"
-#include "../../utils/list.h"
 
-static struct nn_socktype nn_pull_socktype_struct = {
+struct nn_socktype nn_pull_socktype = {
     AF_SP,
     NN_PULL,
     NN_SOCKTYPE_FLAG_NOSEND,
     nn_xpull_create,
     nn_xpull_ispeer,
-    NN_LIST_ITEM_INITIALIZER
 };
-
-struct nn_socktype *nn_pull_socktype = &nn_pull_socktype_struct;
-

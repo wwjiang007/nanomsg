@@ -1,5 +1,6 @@
 /*
     Copyright (c) 2012-2013 Martin Sustrik  All rights reserved.
+    Copyright 2016 Garrett D'Amore <garrett@damore.org>
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"),
@@ -47,8 +48,6 @@ struct nn_req {
     /*  The request being processed. */
     struct nn_task task;
 };
-
-extern struct nn_socktype *nn_req_socktype;
 
 /*  Some users may want to extend the REQ protocol similar to how REQ extends XREQ.
     Expose these methods to improve extensibility. */
