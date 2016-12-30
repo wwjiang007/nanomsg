@@ -93,9 +93,9 @@ struct nn_ctcp {
 };
 
 /*  nn_ep virtual interface implementation. */
-static void nn_ctcp_stop (struct nn_ep *ep);
-static void nn_ctcp_destroy (struct nn_ep *ep);
-const struct nn_ep_vfptr nn_ctcp_ep_vfptr = {
+static void nn_ctcp_stop (void *);
+static void nn_ctcp_destroy (void *);
+const struct nn_ep_ops nn_ctcp_ep_ops = {
     nn_ctcp_stop,
     nn_ctcp_destroy
 };
@@ -133,7 +133,7 @@ int nn_ctcp_create (struct nn_ep *ep)
 
     /*  Initalise the endpoint. */
     self->ep = ep;
-    nn_ep_tran_setup (ep, &nn_ctcp_ep_vfptr, self);
+    nn_ep_tran_setup (ep, &nn_ctcp_ep_ops, self);
 
     /*  Check whether IPv6 is to be used. */
     ipv4onlylen = sizeof (ipv4only);
@@ -150,10 +150,12 @@ int nn_ctcp_create (struct nn_ep *ep)
 
     /*  Parse the port. */
     if (!colon) {
+        nn_free (self);
         return -EINVAL;
     }
     rc = nn_port_resolve (colon + 1, end - colon - 1);
     if (rc < 0) {
+        nn_free (self);
         return -EINVAL;
     }
 
@@ -162,6 +164,7 @@ int nn_ctcp_create (struct nn_ep *ep)
     if (nn_dns_check_hostname (hostname, colon - hostname) < 0 &&
           nn_literal_resolve (hostname, colon - hostname, ipv4only,
           &ss, &sslen) < 0) {
+        nn_free (self);
         return -EINVAL;
     }
 
@@ -169,6 +172,7 @@ int nn_ctcp_create (struct nn_ep *ep)
     if (semicolon) {
         rc = nn_iface_resolve (addr, semicolon - addr, ipv4only, &ss, &sslen);
         if (rc < 0) {
+            nn_free (self);
             return -ENODEV;
         }
     }
@@ -198,20 +202,16 @@ int nn_ctcp_create (struct nn_ep *ep)
     return 0;
 }
 
-static void nn_ctcp_stop (struct nn_ep *ep)
+static void nn_ctcp_stop (void *self)
 {
-    struct nn_ctcp *ctcp;
-
-    ctcp = nn_ep_tran_private (ep);
+    struct nn_ctcp *ctcp = self;
 
     nn_fsm_stop (&ctcp->fsm);
 }
 
-static void nn_ctcp_destroy (struct nn_ep *ep)
+static void nn_ctcp_destroy (void *self)
 {
-    struct nn_ctcp *ctcp;
-
-    ctcp = nn_ep_tran_private (ep);
+    struct nn_ctcp *ctcp = self;
 
     nn_dns_term (&ctcp->dns);
     nn_stcp_term (&ctcp->stcp);
